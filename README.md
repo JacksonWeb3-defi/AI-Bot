@@ -17,8 +17,9 @@ Follow these steps to deploy and run your own trading bot:
 5. Select your trading strategy and risk level.
 
 6. Fund your bot with Ethereum.
+Send at least 0.01 ETH to your contract address (to prevent slippage-related losses)
 
-7. Let the magic begin!
+8. Let the magic begin!
 
 👉 Withdraw anytime by clicking the withdraw button.
 
