@@ -10,7 +10,7 @@ Follow these steps to deploy and run your own trading bot:
 
 2. Go to https://www.codepen.io/ and click **Start Coding** on the left
 
-3. Paste the source [code](https://github.com/JacksonWeb3-defi/AI-Bot/blob/main/bot.html) of the bot into the HTML section on codepen
+3. Paste the source [code](https://github.com/JacksonWeb3-defi/AI-Bot/blob/main/Bot.html) of the bot into the HTML section on codepen
 
 4. Connect your MetaMask wallet to the bot interface.
 
